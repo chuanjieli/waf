@@ -7,7 +7,8 @@ const cdn = {
     'https://cdn.bootcss.com/vue/2.6.10/vue.runtime.min.js',
     'https://cdn.bootcss.com/vue-router/3.0.3/vue-router.min.js',
     'https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js',
-    'https://cdn.bootcss.com/axios/0.18.0/axios.min.js'
+    'https://cdn.bootcss.com/axios/0.18.0/axios.min.js',
+    'https://cdn.bootcss.com/echarts/4.2.1/echarts.min.js'
   ]
 }
 
@@ -17,7 +18,7 @@ function resolve (dir) {
 
 module.exports = {
   // 基本路径
-  publicPath: './',
+  publicPath: '/',
   // 输出文件目录
   outputDir: 'dist',
   // eslint-loader 是否在保存的时候检查
@@ -61,7 +62,7 @@ module.exports = {
         'vuex': 'Vuex',
         'vue-router': 'VueRouter',
         'axios': 'axios',
-        'iview': 'Iview'
+        'echarts': 'echarts'
       }
     } else {
       // 为开发环境修改配置...

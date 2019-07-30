@@ -55,7 +55,7 @@
               <Icon type="ios-navigate"></Icon>
               <span>首页</span>
             </MenuItem>
-            <MenuItem name="webList" to="/webList">
+            <MenuItem name="weblist" to="/weblist">
               <Icon type="logo-buffer"></Icon>
               <span>网站列表</span>
             </MenuItem>

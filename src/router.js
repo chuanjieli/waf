@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import home from './components/home.vue'
 import layout from './views/layout.vue'
-// import login from './views/login.vue'
 
 Vue.use(Router)
 
@@ -11,27 +9,31 @@ var router = new Router({
   base: process.env.VUE_APP_ROUTER_URL || process.env.VUE_APP_ROUTER_PRO_URL || '/',
   routes: [
     {
+      path: '/login',
+      name: 'login',
+      component: () => import(/* webpackChunkName: "login" */ './views/login.vue')
+    }, {
       path: '/',
       component: layout,
       redirect: '/home',
       children: [{
         path: '/home',
-        component: () => import(/* webpackChunkName: "home" */ './components/home.vue'),
-        name: 'home'
+        name: 'home',
+        component: () => import(/* webpackChunkName: "home" */ './components/home.vue')
+      }, {
+        path: '/weblist',
+        name: 'weblist',
+        component: () => import(/* webpackChunkName: "weblist" */ './components/weblist.vue')
+      }, {
+        path: '/weblist/protectreport/:domain/:date',
+        name: 'protectreport',
+        component: () => import(/* webpackChunkName: "protectreport" */ './components/protectReport.vue')
+      }, {
+        path: '/weblist/visitreport/:domain/:date',
+        name: 'visitreport',
+        component: () => import(/* webpackChunkName: "visitreport" */ './components/visitReport.vue')
       }]
-    }, {
-      path: '/login',
-      name: 'login',
-      component: () => import(/* webpackChunkName: "login" */ './views/login.vue')
     }
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (about.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    // }
   ]
 })
 
