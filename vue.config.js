@@ -32,7 +32,8 @@ module.exports = {
     // 配置别名
     config.resolve.alias
       .set('@', resolve('src'))
-      .set('@img', resolve('src/assets/images'))
+      .set('@img', resolve('src/assets/img'))
+      .set('@js', resolve('src/assets/js'))
       .set('@css', resolve('src/assets/styles/css'))
       .set('@scss', resolve('src/assets/styles/scss'))
     // 生产环境配置

@@ -11,7 +11,15 @@ var router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: () => import(/* webpackChunkName: "login" */ './views/login.vue')
+      component: () => import(/* webpackChunkName: "login" */ '@/views/login.vue')
+    }, {
+      path: '/wafscreen/:site',
+      name: 'wafscreen',
+      component: () => import(/* webpackChunkName: "wafscreen" */ '@/views/wafScreen.vue'),
+      meta: {
+        requireAuth: true,
+        roles: ['0']
+      }
     }, {
       path: '/',
       component: layout,
@@ -19,20 +27,40 @@ var router = new Router({
       children: [{
         path: '/home',
         name: 'home',
-        component: () => import(/* webpackChunkName: "home" */ './components/home.vue')
+        component: () => import(/* webpackChunkName: "home" */ './components/home.vue'),
+        meta: {
+          requireAuth: true,
+          roles: ['1']
+        }
       }, {
         path: '/weblist',
         name: 'weblist',
-        component: () => import(/* webpackChunkName: "weblist" */ './components/weblist.vue')
+        component: () => import(/* webpackChunkName: "weblist" */ './components/weblist.vue'),
+        meta: {
+          requireAuth: true,
+          roles: ['1']
+        }
       }, {
         path: '/weblist/protectreport/:domain/:date',
         name: 'protectreport',
-        component: () => import(/* webpackChunkName: "protectreport" */ './components/protectReport.vue')
+        component: () => import(/* webpackChunkName: "protectreport" */ './components/protectReport.vue'),
+        meta: {
+          requireAuth: true,
+          roles: ['1']
+        }
       }, {
         path: '/weblist/visitreport/:domain/:date',
         name: 'visitreport',
-        component: () => import(/* webpackChunkName: "visitreport" */ './components/visitReport.vue')
+        component: () => import(/* webpackChunkName: "visitreport" */ './components/visitReport.vue'),
+        meta: {
+          requireAuth: true,
+          roles: ['1']
+        }
       }]
+    }, {
+      path: '*',
+      name: 'notfound',
+      component: () => import(/* webpackChunkName: "login" */ './views/notfound.vue')
     }
   ]
 })
@@ -44,11 +72,24 @@ router.beforeEach((to, from, next) => {
     next()
   } else {
     let token = localStorage.getItem('Authorization')
-
-    if (token === null || token === '') {
+    let role = localStorage.getItem('role')
+    if (token === null || token === '' || role === '') {
       next('/login')
     } else {
-      next()
+      if (to.meta.roles) {
+        if (to.meta.roles.length !== 0) {
+          for (let i = 0; i < to.meta.roles.length; i++) {
+            if (role === to.meta.roles[i]) {
+              next()
+              break
+            } else {
+              next('/login')
+            }
+          }
+        }
+      } else {
+        next()
+      }
     }
   }
 })

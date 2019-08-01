@@ -109,9 +109,13 @@ export default {
               })
               if (response.data.status) {
                 localStorage.setItem('user', JSON.stringify(this.form.userName))
+                localStorage.setItem(
+                  'role',
+                  JSON.stringify(response.data.user_type)
+                )
 
                 if (response.data.user_type === 0) {
-                  this.$router.push({ path: '/large/world' })
+                  this.$router.push({ path: '/wafscreen/world' })
                 } else {
                   this.$router.push({ path: '/home' })
                 }
