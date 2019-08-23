@@ -4,9 +4,9 @@
       <i class="logo"></i>
       <i class="logo1" title="切换地图" @click="cutMap" ref="logo"></i>
       <span>今日阻断</span>
-      <span class="font num">{{attack_num}}</span>
+      <span class="font num">{{attack_num.day_attack_num}}</span>
       <span>次，累计阻断</span>
-      <span class="font addNum">{{all_attack_num}}</span>
+      <span class="font addNum">{{attack_num.all_attack_num}}</span>
       <span>次</span>
       <div id="userName">
         <span class="userName">{{user}}</span>
@@ -21,7 +21,7 @@
           <span class="col col2"></span>
           <span class="col col1"></span>
           <div class="gradient titleFont">被防护网站数</div>
-          <div class="font networkNum">{{app_node_num.app_num}}</div>
+          <div class="font networkNum">{{app_node_num.all_pro_web_num}}</div>
         </div>
         <div class="square leftMiddle">
           <span class="row row1"></span>
@@ -127,17 +127,18 @@
         </div>
       </div>
     </div>
-    <Spin style="z-index:99999999999999" size="large" fix v-if="spinShow"></Spin>
+    <Spin style="z-index:9999999" size="large" fix v-if="spinShow"></Spin>
   </div>
 </template>
 <script>
 import echarts from 'echarts'
 import 'echarts/map/js/world.js'
+import 'echarts/map/js/china.js'
 import geoCoordMap from '../assets/js/mapjson'
-import imgurl from '@img/arrow.png'
-import imgurl1 from '@img/arrow1.png'
-import imgurl2 from '@img/china.png'
-import imgurl3 from '@img/world.png'
+import imgurl from '../assets/img/arrow.png'
+import imgurl1 from '../assets/img/arrow1.png'
+// import imgurl2 from '../assets/img/china.png'
+// import imgurl3 from '../assets/img/world.png'
 export default {
   inject: ['reload'],
   data () {
@@ -146,7 +147,6 @@ export default {
       animate: false,
       app_node_num: '',
       attack_num: '',
-      all_attack_num: '',
       attack_source: [],
       attack_type: [],
       be_attack_host: [],
@@ -161,7 +161,13 @@ export default {
       timer2: '',
       user: '',
       myChart2: '',
-      num: 0
+      num: 0,
+      src: [
+        require('../assets/img/arrow.png'),
+        require('../assets/img/arrow1.png'),
+        require('../assets/img/china.png'),
+        require('../assets/img/world.png')
+      ]
     }
   },
   created () {
@@ -173,9 +179,9 @@ export default {
   mounted () {
     let logo = this.$refs.logo
     if (this.$route.params.site === 'world') {
-      logo.style.background = 'url(' + imgurl2 + ') -5px -2px'
+      logo.style.background = 'url(' + this.src[2] + ') -5px -2px'
     } else {
-      logo.style.background = 'url(' + imgurl3 + ') -5px -2px'
+      logo.style.background = 'url(' + this.src[3] + ') -5px -2px'
     }
   },
   methods: {
@@ -205,118 +211,103 @@ export default {
     logout () {
       window.localStorage.removeItem('access-user')
       window.localStorage.removeItem('user')
-      window.localStorage.removeItem('role')
       this.$router.go('/login')
     },
     getData (site) {
-      this.axios
-        .get('http://10.1.4.51:8000/hedunwaf/' + site + '_all_info/')
-        .then(res => {
-          if (res.data.msg === 'ok') {
-            this.app_node_num = res.data.app_node_num
-            // this.attack_num = res.data.attack_num
-            this.attack_source = res.data.attack_source
-            this.attack_type = res.data.attack_type
-            this.be_attack_host = res.data.be_attack_host
-            if (site === 'china') {
-              this.attack_num = res.data.attack_num.cn_attack_num
-              this.all_attack_num = res.data.attack_num.cn_all_attack_num
-            } else {
-              this.attack_num = res.data.attack_num.day_attack_num
-              this.all_attack_num = res.data.attack_num.all_attack_num
-            }
-            let line = {
-              datax: [],
-              datay: []
-            }
-            for (let index = 0; index < res.data.trend_map.length; index++) {
-              line.datax.push(res.data.trend_map[index].trend_time)
-              line.datay.push(res.data.trend_map[index].trend_num)
-            }
-            let bar = {
-              datax: [],
-              datay: []
-            }
-            for (
-              let index = 0;
-              index < res.data.attack_source.length;
-              index++
-            ) {
-              bar.datax.push(res.data.attack_source[index].attak_source)
-              bar.datay.push(res.data.attack_source[index].attack_num)
-            }
-            this.line = line
-            this.bar = bar
-
-            this.wrapecharts()
-            this.timer1 = setTimeout(() => {
-              this.getData(site)
-            }, 8000)
-          } else if (
-            res.data.msg === 'You are not logged in, please login first!'
-          ) {
-            this.logout()
+      this.axios.get('/' + site + '_all_info/').then(res => {
+        if (res.data.msg === 'success!') {
+          this.app_node_num = res.data.data.all_web_num_dict
+          this.attack_num = res.data.data.attack_num
+          this.attack_source = res.data.data.attack_source
+          this.attack_type = res.data.data.attack_type
+          this.be_attack_host = res.data.data.be_attack_host
+          let line = {
+            datax: [],
+            datay: []
           }
-        })
+          for (let index = 0; index < res.data.data.trend_map.length; index++) {
+            line.datax.push(res.data.data.trend_map[index].trend_time)
+            line.datay.push(res.data.data.trend_map[index].trend_num)
+          }
+          let bar = {
+            datax: [],
+            datay: []
+          }
+          for (
+            let index = 0;
+            index < res.data.data.attack_source.length;
+            index++
+          ) {
+            bar.datax.push(res.data.data.attack_source[index].attack_ip_loc)
+            bar.datay.push(res.data.data.attack_source[index].attack_num)
+          }
+          this.line = line
+          this.bar = bar
+
+          this.wrapecharts()
+          this.timer1 = setTimeout(() => {
+            this.getData(site)
+          }, 8000)
+        } else if (
+          res.data.msg === 'You are not logged in, please login first!'
+        ) {
+          this.logout()
+        }
+      })
     },
     getData1 (site, id) {
       clearInterval(this.timer)
-      this.axios
-        .get(
-          'http://10.1.4.51:8000/hedunwaf/' + site + '_attack_logs/?id=' + id
-        )
-        .then(res => {
-          var that = this
-          if (res.data.msg === 'ok') {
-            var map = site + '_attack_map'
-            var logs = site + '_attack_logs'
+      this.axios.get('/' + site + '_attack_logs/?id=' + id).then(res => {
+        var that = this
+        if (res.data.msg === 'ok') {
+          var map = site + '_attack_map'
+          var logs = site + '_attack_logs'
 
-            this.map_data = this.lines(res.data[map])
-            if (this.map_data[0].length > 0 || id === 1) {
-              this.wrapmap(site)
-            }
-
-            let data = res.data[logs]
-            var len = 0
-            if (id === 0) {
-              data = data.reverse()
-              len = data.length > 4 ? 4 : data.length
-            } else {
-              len = data.length
-            }
-
-            for (let i = 0; i < len; i++) {
-              if (id === 0) {
-                this.roll_data.unshift(res.data[logs][i])
-                this.roll_data1.unshift(res.data[logs][i])
-              } else {
-                this.roll_data.push(res.data[logs][i])
-                this.roll_data1.push(res.data[logs][i])
-              }
-            }
-            if (this.roll_data.length <= 7) {
-              let leng = this.roll_data.length
-              this.$refs.listBody.style.height = 36 * leng + 'px'
-            } else {
-              this.$refs.listBody.style.height = '252px'
-            }
-
-            that.spinShow = false
-            if (id === 0) {
-              // this.roll_data.splice(15, this.roll_data.length);
-              // this.roll_data1.splice(15, this.roll_data.length);
-            }
-
-            this.timer2 = setTimeout(() => {
-              clearInterval(that.timer)
-              that.getData1(site, 0)
-            }, 3000)
-          } else if (
-            res.data.msg === 'You are not logged in, please login first!'
-          ) {
-            this.logout()
+          this.map_data = this.lines(res.data[map])
+          if (this.map_data[0].length > 0 || id === 1) {
+            this.wrapmap(site)
           }
-        })
+          let data = res.data[logs]
+          var len = 0
+          if (id === 0) {
+            data = data.reverse()
+            len = data.length > 4 ? 4 : data.length
+          } else {
+            len = data.length
+          }
+
+          for (let i = 0; i < len; i++) {
+            if (id === 0) {
+              this.roll_data.unshift(res.data[logs][i])
+              this.roll_data1.unshift(res.data[logs][i])
+            } else {
+              this.roll_data.push(res.data[logs][i])
+              this.roll_data1.push(res.data[logs][i])
+            }
+          }
+          if (this.roll_data.length <= 7) {
+            let leng = this.roll_data.length
+            this.$refs.listBody.style.height = 36 * leng + 'px'
+          } else {
+            this.$refs.listBody.style.height = '252px'
+          }
+
+          that.spinShow = false
+          if (id === 0) {
+            // this.roll_data.splice(15, this.roll_data.length);
+            // this.roll_data1.splice(15, this.roll_data.length);
+          }
+
+          this.timer2 = setTimeout(() => {
+            clearInterval(that.timer)
+            that.getData1(site, 0)
+          }, 5000)
+        } else if (
+          res.data.msg === 'You are not logged in, please login first!'
+        ) {
+          this.logout()
+        }
+      })
     },
     lines (data) {
       var arrData = []
@@ -336,6 +327,8 @@ export default {
           case 'L':
             level = 2
             break
+          default:
+            level = 4
         }
 
         arr.push([
@@ -515,7 +508,9 @@ export default {
         window.onresize = function () {
           myChart.resize()
           myChart1.resize()
-          that.myChart2.resize()
+          if (that.myChart2) {
+            that.myChart2.resize()
+          }
         }
         myChart1.setOption(option1)
       })
@@ -740,11 +735,18 @@ export default {
       let time = a.substr(a.indexOf('T') + 1)
       return time
     }
+  },
+  beforeDestroy () {
+    this.$once('hook:beforeDestroy', () => {
+      clearInterval(this.timer)
+      clearTimeout(this.timer1)
+      clearTimeout(this.timer2)
+    })
   }
 }
 </script>
 <style scoped>
-/* @import '../../common/font/font.css'; */
+@import '../assets/common/font/font.css';
 .font {
   font-family: 'myfont', 'Microsoft YaHei';
 }
@@ -905,6 +907,7 @@ li {
   display: inline-block;
   width: 2.5rem /* 40px */;
   height: 2.5rem /* 40px */;
+  /* background: url('../assets/img/map.png'); */
   background-position: -5px -2px;
 }
 
@@ -1104,7 +1107,7 @@ li {
 .listBody {
   position: relative;
   /* display:none; */
-  /* height: 252px; */
+  height: 252px;
   overflow: hidden;
   transition: all 0.5s;
 }
@@ -1308,6 +1311,10 @@ li {
 
   .listBlock {
     height: 2.25rem /* 36px */;
+  }
+
+  .listBody {
+    height: 252px;
   }
 
   .centerCont {

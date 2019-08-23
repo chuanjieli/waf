@@ -30,7 +30,7 @@ var router = new Router({
         component: () => import(/* webpackChunkName: "home" */ './components/home.vue'),
         meta: {
           requireAuth: true,
-          roles: ['1']
+          roles: ['2']
         }
       }, {
         path: '/weblist',
@@ -38,7 +38,7 @@ var router = new Router({
         component: () => import(/* webpackChunkName: "weblist" */ './components/weblist.vue'),
         meta: {
           requireAuth: true,
-          roles: ['1']
+          roles: ['2']
         }
       }, {
         path: '/weblist/protectreport/:domain/:date',
@@ -46,7 +46,7 @@ var router = new Router({
         component: () => import(/* webpackChunkName: "protectreport" */ './components/protectReport.vue'),
         meta: {
           requireAuth: true,
-          roles: ['1']
+          roles: ['2']
         }
       }, {
         path: '/weblist/visitreport/:domain/:date',
@@ -54,13 +54,16 @@ var router = new Router({
         component: () => import(/* webpackChunkName: "visitreport" */ './components/visitReport.vue'),
         meta: {
           requireAuth: true,
-          roles: ['1']
+          roles: ['2']
         }
       }]
     }, {
-      path: '*',
+      path: '/notfound',
       name: 'notfound',
       component: () => import(/* webpackChunkName: "login" */ './views/notfound.vue')
+    }, {
+      path: '*',
+      redirect: '/notfound'
     }
   ]
 })

@@ -7,9 +7,10 @@ import axios from 'axios'
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-
+axios.defaults.withCredentials = true
 let config = {
-  baseURL: process.env.VUE_APP_BASE_API || process.env.VUE_APP_URL || '',
+  baseURL: 'http://106.13.41.122:8000/hedunwaf/',
+  // baseURL: process.env.VUE_APP_BASE_API || process.env.VUE_APP_URL || '',
   timeout: 6 * 1000, // Timeout
   withCredentials: true // Check cross-site Access-Control
 }
@@ -35,6 +36,10 @@ _axios.interceptors.request.use(
 _axios.interceptors.response.use(
   function (response) {
     // Do something with response data
+    if (response.data.msg === 'You are not logged in, please login first!') {
+      console.log(11)
+      window.location.href = '/login'
+    }
     return response
   },
   function (error) {

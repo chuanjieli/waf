@@ -292,7 +292,7 @@ export default {
     request (date = '') {
       var that = this
       this.axios
-        .get('/hedunwaf/home_all_info/?date_time=' + date)
+        .get('/home_all_info/?date_time=' + date)
         .then(function (response) {
           console.log(response)
 

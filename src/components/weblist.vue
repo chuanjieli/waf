@@ -141,7 +141,7 @@ export default {
     this.month = this.dateStr()
     var that = this
     this.axios
-      .get('/hedunwaf/web_all_list/')
+      .get('/web_all_list/')
       .then(function (response) {
         that.data1 = response.data.data.all_web_list
         that.spinShow = false

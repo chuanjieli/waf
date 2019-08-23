@@ -5,8 +5,8 @@ import router from './router'
 import store from './store'
 import Iview from 'iview'
 import 'iview/dist/styles/iview.css'
-Vue.config.productionTip = false
 Vue.use(Iview)
+Vue.config.productionTip = false
 new Vue({
   router,
   store,

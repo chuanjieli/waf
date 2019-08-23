@@ -8,6 +8,7 @@ const cdn = {
     'https://cdn.bootcss.com/vue-router/3.0.3/vue-router.min.js',
     'https://cdn.bootcss.com/vuex/3.0.1/vuex.min.js',
     'https://cdn.bootcss.com/axios/0.18.0/axios.min.js',
+    'https://cdn.bootcss.com/iview/3.4.2/iview.min.js',
     'https://cdn.bootcss.com/echarts/4.2.1/echarts.min.js'
   ]
 }
@@ -18,13 +19,25 @@ function resolve (dir) {
 
 module.exports = {
   // 基本路径
-  publicPath: '/',
+  publicPath: isProduction ? './' : '/',
   // 输出文件目录
   outputDir: 'dist',
   // eslint-loader 是否在保存的时候检查
   lintOnSave: true,
   // webpack配置
   chainWebpack: config => {
+    // config.module
+    //   .rule('images')
+    //   .test(/\.(jpg|png|gif|bmp|jpeg)$/)
+    //   .use('url-loader')
+    //   .loader('url-loader')
+    //   .tap(options => {
+    //     return {
+    //       limit: 10240,
+    //       outputPath: 'img',
+    //       name: '[name]-[hash:8].[ext]'
+    //     }
+    //   })
     config
       .entry('index')
       .add('babel-polyfill')
@@ -34,8 +47,6 @@ module.exports = {
       .set('@', resolve('src'))
       .set('@img', resolve('src/assets/img'))
       .set('@js', resolve('src/assets/js'))
-      .set('@css', resolve('src/assets/styles/css'))
-      .set('@scss', resolve('src/assets/styles/scss'))
     // 生产环境配置
     if (isProduction) {
       // 删除预加载
@@ -63,6 +74,7 @@ module.exports = {
         'vuex': 'Vuex',
         'vue-router': 'VueRouter',
         'axios': 'axios',
+        'iview': 'Iview',
         'echarts': 'echarts'
       }
     } else {
@@ -82,16 +94,16 @@ module.exports = {
     overlay: {
       warnings: true,
       errors: true
-    },
-    proxy: {
-      '/apis': {
-        target: 'http://10.1.4.51:8000', // target host
-        ws: true, // proxy websockets
-        changeOrigin: true, // needed for virtual hosted sites
-        pathRewrite: {
-          '^/apis': '' // rewrite path
-        }
-      }
     }
+    // proxy: {
+    //   '/apis': {
+    //     target: 'http://106.13.41.122:8000', // target host
+    //     ws: true, // proxy websockets
+    //     changeOrigin: true, // needed for virtual hosted sites
+    //     pathRewrite: {
+    //       '^/apis': '' // rewrite path
+    //     }
+    //   }
+    // }
   }
 }

@@ -26,7 +26,7 @@
               </span>
             </Input>
             <img
-              src="http://10.1.4.51:8000/hedunwaf/get_valid_img.png/?1234"
+              src="http://106.13.41.122:8000/hedunwaf/get_valid_img.png/?1234"
               title="点击刷新"
               style="width: 109px;height: 32px;position: absolute;top: 0;right: 0;cursor:pointer"
               @click="refresh($event)"
@@ -100,7 +100,7 @@ export default {
             valid_code: this.form.verify
           })
           this.axios
-            .post('http://10.1.4.51:8000/hedunwaf/login/', data)
+            .post('/login/', data)
             .then(response => {
               console.log(response.data)
               this.userToken = 'Bearer' + new Date().getTime()
@@ -137,7 +137,7 @@ export default {
     }
   },
   mounted () {
-    console.log(this.$store._mutations.changeLogin)
+    // console.log(this.$store._mutations.changeLogin)
   }
 }
 </script>
